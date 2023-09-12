@@ -1,1 +1,1 @@
-main(a,b){scanf("%d %d",&a,&b);printf((a>b)?">":(a<b)?"<":"==");}
+main(a,b){scanf("%d%d",&a,&b);puts(a>b?">":a<b?"<":"==");}
