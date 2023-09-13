@@ -1,0 +1,2 @@
+int r[100][100];
+main(a,b,i,j,t){scanf("%d%d",&a,&b);for(i=0;i<a;++i)for(j=0;j<b;++j)scanf("%d",&r[i][j]);for(i=0;i<a;++i)for(j=0;j<b;++j){scanf("%d",&t);r[i][j]+=t;}for(i=0;i<a;++i){for(j=0;j<b;++j)printf("%d ",r[i][j]);puts("");}}
