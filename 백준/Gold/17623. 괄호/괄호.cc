@@ -22,49 +22,34 @@ int main(){
 
     vector<string> v(1001, "");
     
-    for(int i = 0; i<=1000; ++i){
-        string curr = v[i];
-        ll n = i;
-        
-        if(n > 0){
-            if(2*n <= 1000){
-                if(cmp("1"+curr+"2", v[2*n]) || v[2*n] == ""){
-                    v[2*n] = "1"+curr+"2";
-                }
-            }
-            if(3*n <= 1000){
-                if(cmp("3"+curr+"4" , v[3*n]) || v[3*n] == ""){
-                    v[3*n] = "3"+curr+"4";
-                }
-            }
-            if(5*n <= 1000){
-                if(cmp("5"+curr+"6" , v[5*n]) || v[5*n] == ""){
-                    v[5*n] = "5"+curr+"6";
-                }
+    v[1] = "12";
+    v[2] = "34";
+    v[3] = "56";
+    
+    
+    for(int i = 4; i<=1000; ++i){
+        v[i] = v[1] + v[i-1];
+        for(int j = 1; j<i; ++j){
+            if(cmp(v[j]+v[i-j], v[i])){
+                v[i] = v[j]+v[i-j];
             }
         }
-        if(n+1 <= 1000){
-            string add_what = "12"+curr;
-            if(cmp(curr+"12" , add_what)) add_what = curr+"12";
-            if(cmp(add_what , v[n+1]) || v[n+1] ==""){
-                v[n+1] = add_what;
-            }
-        }
-        if(n+2 <= 1000){
-            string add_what = "34"+curr;
-            if(cmp(curr+"34" , add_what)) add_what = curr+"34";
-            if(cmp(add_what , v[n+2]) || v[n+2] ==""){
-                v[n+2] = add_what;
+        if(i%2 == 0){
+            if(cmp("1"+v[i/2]+"2", v[i])){
+                v[i] = "1"+v[i/2]+"2";
             }
         }        
-        if(n+3 <= 1000){
-            string add_what = "56"+curr;
-            if(cmp(curr+"56" , add_what)) add_what = curr+"56";
-            if(cmp(add_what , v[n+3]) || v[n+3] ==""){
-                v[n+3] = add_what;
+        if(i%3 == 0){
+            if(cmp("3"+v[i/3]+"4", v[i])){
+                v[i] = "3"+v[i/3]+"4";
+            }
+        }        
+        if(i%5 == 0){
+            if(cmp("5"+v[i/5]+"6", v[i])){
+                v[i] = "5"+v[i/5]+"6";
             }
         }
-    }
+    } // O(N^2) DP
 
 
     ll T;
@@ -86,4 +71,4 @@ int main(){
 
     
     return 0;
-} // BFS
+} // DP
