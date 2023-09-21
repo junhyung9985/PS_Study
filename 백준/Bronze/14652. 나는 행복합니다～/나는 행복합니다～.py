@@ -1,0 +1,1 @@
+a,b,c=map(int,input().split());print("{} {}".format(c//b,c%b))
