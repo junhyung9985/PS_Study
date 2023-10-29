@@ -21,52 +21,58 @@ int main(){
     cin >> s;
     
     vector<ll> cnt(N+1);
+    vector<ll> bef(N+1);
     vector<vector<ll>> E(N+1);
-    vector<ll> ind(N+1);
-    vector<bool> vis(N+1, false);
-    
+    vector<ll> depths(N+1, 0);
+
+
     for(int i =0;i<N-1; ++i){
         ll a, b;
         cin >> a >> b;
         E[a].push_back(b);
         E[b].push_back(a);
-        ind[a]++;
-        ind[b]++;
+        
     }
-
+    
     deque<ll> q;
-    for(int i =1; i<=N; ++i){
-        if(ind[i] == 1) {
-            q.push_back(i);
-        }
-    }
-
+    vector<ll> traverse;
+    q.push_back(1);
+    depths[1] = 1;
     while(!q.empty()){
         ll n = q.front();
         q.pop_front();
-        ll p = 0;
-        vis[n] = true;
+        traverse.push_back(n);
         for(int i : E[n]){
-            if(!vis[i]) p = i;
+            if(depths[i] == 0){
+                depths[i] = depths[n]+1;
+                q.push_back(i);
+            }
+        }
+    } // BFS
+
+    while(!traverse.empty()){
+        ll n =  traverse.back();
+        traverse.pop_back();
+        ll par = 0;
+        for(int i : E[n]){
+            if(depths[i] < depths[n]){
+                par = i;
+            }
         }
 
-        if(s[n-1] =='1'){
-            cnt[p]++;
+        if(s[n-1] == '1'){
             ans += cnt[n]*2;
+            cnt[par]++;
         }
         else {
-            ans += cnt[n]*(cnt[n]-1);
-            cnt[p] += cnt[n];
+            cnt[par] += cnt[n];
+            ans += cnt[n]*(cnt[n]-1) - bef[n];
+            bef[par] += cnt[n]*(cnt[n]-1);
         }
-
-        --ind[p];
-        if(ind[p] == 1){
-            q.push_back(p);
-        }
-        //cout << n <<" "<<cnt[n] <<" " << ans<<"\n";
+        //cout << n <<" "<<cnt[n]<<" "<<ans<<"\n";
     }
 
     cout << ans;
 
     return 0;
-} // Combinatorics, Trees, Topological Sort
+} // Combinatorics, BFS, Trees
