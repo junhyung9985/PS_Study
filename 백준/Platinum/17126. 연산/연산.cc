@@ -9,8 +9,8 @@ using namespace __gnu_pbds;
 #define ordered_set tree<int, null_type, less<int>, rb_tree_tag,tree_order_statistics_node_update>
 // PBDS
 
-ll tr[400004];
-ll arr[100001];
+ll tr[800008];
+ll arr[200002];
 
 ll update(ll n, ll s ,ll e, ll idx){
     if(idx < s || idx > e) return tr[n];
@@ -39,10 +39,9 @@ int main(){
         cin >> q;
         if(q == 1){
             string key;
-            string tmp = "";
             ll val;
             cin >> key >> val;
-            while(key.size() <100){
+            while(key.size() <=105){
                 key = '0'+key;
             }
             queries[i] = {q,key, val, key};
@@ -51,10 +50,10 @@ int main(){
         if(q == 2){
             string key1, key2;
             cin >> key1 >> key2;
-            while(key1.size() <100){
+            while(key1.size() <=105){
                 key1 = '0'+key1;
             }
-            while(key2.size() <100){
+            while(key2.size() <=105){
                 key2 = '0'+key2;
             }
             queries[i] = {q, key1, 0, key2};
@@ -65,7 +64,7 @@ int main(){
             string key;
             string tmp = "";
             cin >> key;
-            while(key.size() <100){
+            while(key.size() <=105){
                 key = '0'+key;
             }
             queries[i] = {q,key, 0, key};
@@ -76,6 +75,7 @@ int main(){
     ll t_idx = 0;
     map<string,ll> m;
     for(auto itr : s){
+        //cout << itr<<"\n";
         m[itr] = t_idx++;
     } // Coordinate Compression
 
