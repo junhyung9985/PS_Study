@@ -1,0 +1,5 @@
+n,a,b = map(int,input().split())
+if(b-n < 0) : print("Bus")
+elif(a < b) : print("Bus")
+elif (a > b) : print("Subway")
+else : print("Anything")
