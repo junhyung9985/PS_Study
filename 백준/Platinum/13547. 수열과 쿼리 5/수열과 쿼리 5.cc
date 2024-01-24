@@ -3,77 +3,95 @@
 
 using namespace std;
 
-int main()
-{
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
+vector<ll> Mos(vector<ll> v, vector<pair<ll,ll>> queries){ // vector of array with values, vector of pairs {start, end} queries 
     
-    ll N;
-    cin >> N;
-    
+    ll N = v.size();
     ll bucket_size = sqrt(N);
-    vector<ll> v(N);
+    ll Q = queries.size();
+
+    vector<tuple<ll,ll,ll,ll>> Queries(Q);
+    vector<ll> ans(Q);
     
-    for(int i =0; i<N; ++i)
-        cin >> v[i];
-    
-    ll Q;
-    cin >> Q;
-    vector<tuple<ll,ll,ll,ll,ll>> queries(Q);
-    vector<ll> answer(Q);
-    for(int i =0; i<Q; ++i){
-        ll x, y;
-        cin >> x >> y;
-        --x;--y;
-        queries[i] = {x/bucket_size, y,x,0,i};
+    for(int i = 0; i < Q; ++i){
+        Queries[i] = {queries[i].first/bucket_size, queries[i].second, queries[i].first, i};
     }
+
+    sort(Queries.begin(), Queries.end());
+
+    ll curr_ans = 0;
+    ll sqrt_s, e, s, idx;
+    tie(sqrt_s, e, s, idx) = Queries[0];
     
-    sort(queries.begin(), queries.end());
-    
-    ll idx, s,e, ans, tmp,tmp2;
-    tie(idx,e,s,tmp, tmp2) = queries[0];
-    
+    /// Logics start
     vector<ll> how_many(1000001);
-    ans = 0;
-    
-    for(int i = s; i<=e; ++i){
-        if(how_many[v[i]] == 0){
-            ++ans;
-        }
+    for (int i = s; i <= e; ++i){
+        if(how_many[v[i]] == 0) ++curr_ans;
         ++how_many[v[i]];
     }
-    answer[tmp2] = ans;
-    
-    
-    for(int i = 1; i<Q; ++i){
-        ll n_s, n_e;
-        tie(idx, n_e, n_s, tmp, tmp2) = queries[i];
-        
+    ans[idx] = curr_ans;
+    /// Logics end
+
+    for(int i = 1; i < Q; ++i){
+        ll sqrt_s, n_e, n_s, idx;
+        tie(sqrt_s, n_e, n_s, idx) = Queries[i];
+
         while(n_s < s){
             --s;
-            if(how_many[v[s]] == 0) ++ans;
+            /// Logics start
+            if(how_many[v[s]] == 0) ++curr_ans;
             ++how_many[v[s]];
+            /// Logics end
         }
+
         while(n_s > s){
+            /// Logics start
             --how_many[v[s]];
-            if(how_many[v[s]] == 0) --ans;
+            if(how_many[v[s]] == 0) --curr_ans;
+            /// Logics end
             ++s;
         }
+
         while(n_e < e){
+            /// Logics start
             --how_many[v[e]];
-            if(how_many[v[e]] == 0) -- ans;
+            if(how_many[v[e]] == 0) --curr_ans;
+            /// Logics end
             --e;
         }
+
         while(n_e > e){
             ++e;
-            if(how_many[v[e]] == 0) ++ans;
+            /// Logics start
+            if(how_many[v[e]] == 0) ++curr_ans;
             ++how_many[v[e]];
+            /// Logics end
         }
-        answer[tmp2] = ans;
+        ans[idx] = curr_ans;
     }
+
+    return ans;
+};
+
+int main(){
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+
+    ll N, Q;
     
-    for(int i =0; i<Q; ++i)
-        cout << answer[i]<<"\n";
+    cin >> N;
+    vector<ll> v(N);    
+    for(int i =0; i<N; ++i) cin >> v[i];
     
+    cin >> Q;
+    vector<pair<ll,ll>> q(Q);
+    for(int i =0; i<Q; ++i){
+        cin >> q[i].first >> q[i].second; 
+        --q[i].first; --q[i].second;
+    } 
+    
+    vector<ll> ans = Mos(v,q);
+
+    for(auto itr : ans) cout << itr<<"\n";
+
     return 0;
-} // Mo's Algorithm, Offline Query
+} // Example : BOJ 13547 Example 1
