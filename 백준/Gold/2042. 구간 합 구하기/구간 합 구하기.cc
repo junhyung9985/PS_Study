@@ -3,92 +3,62 @@
 
 using namespace std;
 
-vector<vector<ll>> v;
-vector<ll> q;
+ll N, M, K;
+ll arr[1000001];
+ll tree[4000001];
+
+ll init(ll node, ll start, ll end){
+    if(start == end) return tree[node] = arr[start];
+    ll mid = (start + end)/2;
+    return tree[node] = init(node*2, start , mid) + init(node*2+1, mid+1, end);
+}
+
+ll query(ll node, ll start , ll end , ll left, ll right){
+    if(end < left || right < start) return 0;
+    if(left <= start && end <= right) return tree[node];
+    ll mid = (start+end)/2;
+    return query(node*2, start, mid, left, right)+ query(node*2+1, mid+1, end, left, right);
+}
+
+void update(ll node, ll start, ll end, ll idx, ll diff){
+    if(end < idx || idx < start) return;
+    if(start == end) {
+        tree[node] += diff;
+        return;
+    }
+    if(start <= idx && idx <= end){
+        tree[node] += diff;
+    }
+    ll mid = (start+end)/2;
+    update(node*2, start, mid, idx, diff);
+    update(node*2+1, mid+1, end, idx, diff);
+    return;
     
+}
 
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    
-    ll N, Q, K;
-    cin >> N >> Q >> K;
-    Q+=K;
-    ll div = sqrt(N);
-    
-    int idx = 0;
-    for(int i =0; i<N; ++i){
-        ll tmp;
-        cin >> tmp;
-        if(idx == 0){
-            v.push_back(vector<ll>());
-            q.push_back(0);
+    cin >> N >> M >> K;
+    for(int i =0; i<N; i++){
+        cin >> arr[i];
+    }
+    init(1,0,N-1);
+
+    for(int i=0; i<M+K; i++){
+        ll a, b, c;
+        cin >> a>>b>>c;
+        if(a == 1){
+            update(1,0,N-1, b-1, c-arr[b-1]);
+            arr[b-1] = c;
         }
-        v.back().push_back(tmp);
-        q.back() += tmp;
-        ++idx;
-        idx %= div;
+        if(a==2){
+            cout << query(1,0,N-1,b-1,c-1)<<"\n";
+        }
     }
     
-    while(Q--){
-        ll query;
-        cin >> query;
-        if(query==1){
-            ll idx, val;
-            cin >> idx >> val;
-            --idx;
-            ll which = idx / div;
-            ll idxx = idx % div;
-            q[which] -= v[which][idxx];
-            v[which][idxx] = val;
-            q[which] += val;
-        }
-        if(query == 2){
-            ll l, r;
-            cin >> l >> r;
-            --l; --r;
-            ll ans = 0;
-            ll beg = 0, end = div-1;
-            for(int i =0; i<v.size(); ++i){
-                if(l <= beg && end <= r){
-                    ans += q[i];
-                }
-                else if (beg <= l && r <= end){
-                    int idx = beg-1;
-                    for(auto itr : v[i]){
-                        ++idx;
-                        if(idx < l || idx > r) continue;
-                        ans += itr;
-                    }
-                }
-                else if (beg < l && l <= end && end < r){
-                    int idx = beg-1;
-                    for(auto itr : v[i]){
-                        ++idx;
-                        if(idx < l) continue;
-                        ans += itr;
-                    }
-                }
-                else if (l < beg && beg <= r&& r < end){
-                    int idx = beg-1;
-                    for(auto itr : v[i]){
-                        ++idx;
-                        if(idx > r) continue;
-                        ans += itr;
-                    }
-                }
-                beg += div; end += div;
-                end = min(end, N-1);
-            }
-            cout << ans <<"\n";
-        }
-    }
     
     return 0;
 }
-/*
 
-Sqrt decomposition
-
-*/
+// Segment Tree를 활용한 제일 기본 문제
+// update는 내가 대략 이렇게 업데이트 될 것이다고 짐작하여 구현해서 정확하지 않을 수 있음
