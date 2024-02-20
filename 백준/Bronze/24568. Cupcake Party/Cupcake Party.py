@@ -1,3 +1,1 @@
-a = int(input())
-b = int(input())
-print((8*a+3*b)-28)
+print((8*int(input())+3*int(input()))-28)
