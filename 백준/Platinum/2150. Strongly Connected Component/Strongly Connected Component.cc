@@ -3,72 +3,103 @@
 
 using namespace std;
 
-ll N, M;
-ll cnt = 1;
+class SCC{
+    public : 
+        ll N;
+        vector<vector<ll>> sccs;
+        vector<ll> depth;
+        vector<ll> top;
+        vector<vector<ll>> e;
+        vector<ll> curr;
+        vector<bool> finished;
+        ll cnt = 0;
 
-vector<vector<ll>> E;
-vector<vector<ll>> SCC;
-vector<ll> dfs_n;
-vector<bool> finished;
-vector<ll> stck;
-
-ll DFS(ll n){
-    dfs_n[n] = cnt++; // 몇 번째로 DFS로 찾았는 가를 갱신
-    ll ret = dfs_n[n]; // 현재 노드로 부터 제일 높이 올라갈 수 있는 노드 번호
-    stck.push_back(n); // 스택에 삽입
-    
-    for(auto itr : E[n]){
-        if(!dfs_n[itr]) ret = min(DFS(itr), ret); // 아직 탐색 안 한 노드
-        else if(!finished[itr]) ret = min(ret, dfs_n[itr]); // 이미 탐색했으나 어느 SCC에도 속하지 않은 노드
-    } // 그래프 탐색
-    
-    if(ret == dfs_n[n]){
-        vector<ll> scc;
-        while(stck.back() != n){
-            ll num = stck.back();
-            stck.pop_back();
-            scc.push_back(num);
-            finished[num] = true;
+        void scc_dfs(ll n){
+            
+            this->curr.push_back(n);
+            this->depth[n] = this->cnt++;
+            this->top[n] = this->depth[n];
+            
+            for(auto itr : this->e[n]){
+                if(this->depth[itr] == -1){
+                    this->depth[itr] = this->depth[n]+1;
+                    scc_dfs(itr);
+                }
+                if(!finished[itr]) 
+                    this->top[n] = min(this->top[n], this->top[itr]);
+            }
+            
+            if(this->top[n] == this->depth[n]){
+                vector<ll> scc;
+                while(!this->curr.empty()){
+                    this->finished[curr.back()] = true;
+                    scc.push_back(this->curr.back());
+                    this->curr.pop_back();
+                    if(scc.back() == n) break;
+                }
+                
+                this->sccs.push_back(scc);
+            }
+            return;
         }
-        stck.pop_back();
-        scc.push_back(n);
-        finished[n] = true;
-        sort(scc.begin(), scc.end());
-        SCC.push_back(scc);
-    }
-    
-    return ret;
-} // SCC - Tarjan Algorithm 
 
-int main()
-{
+        SCC(ll N, vector<vector<ll>> G){
+            this->N = N;
+            this->cnt = 0;
+            this->depth.resize(N+1, -1);
+            this->top.resize(N+1, -1);
+            this->e.resize(N+1, vector<ll>());
+            this->finished.resize(N+1, false);
+            for(int i = 0; i<=N; ++i)
+                for(auto itr : G[i])
+                    this->e[i].push_back(itr);
+        }
+
+        void clear(){
+            this->N = 0;
+            this->cnt = 0;
+            this->depth.clear();
+            this->top.clear();
+            this->sccs.clear();
+            this->e.clear();
+        }
+
+        vector<vector<ll>> run_scc(){
+            for(int i =1; i<=this->N; ++i){
+                if(this->depth[i] == -1){
+                    scc_dfs(i);
+                }
+            }
+            return sccs;
+        }
+};
+
+
+int main(){
     ios_base::sync_with_stdio(0);
     cin.tie(0);
     
-    cin >> N >> M;
-    
-    E.resize(N+1, vector<ll>());
-    dfs_n.resize(N+1, 0);
-    finished.resize(N+1, false);
-    
+    ll N, M;
+    cin >> N  >> M;
+    vector<vector<ll>> E(N+1);
     for(int i =0; i<M; ++i){
         ll a, b;
-        cin >> a >> b;
+        cin >> a>> b;
         E[a].push_back(b);
     }
     
-    for(int i =1; i<=N; ++i){
-        if(!dfs_n[i]) DFS(i);
+    SCC scc (N, E);
+    vector<vector<ll>> sccs = scc.run_scc();
+    
+    for(int i =0 ;i<sccs.size(); ++i)
+        sort(sccs[i].begin(), sccs[i].end());
+        
+    sort(sccs.begin(), sccs.end());
+    
+    cout << sccs.size()<<"\n";
+    for(auto itr : sccs){
+        for(auto itr2 : itr) cout << itr2 <<" ";
+        cout<<-1<<"\n";
     }
-    
-    sort(SCC.begin(), SCC.end());
-    
-    cout << SCC.size()<<"\n";
-    for(auto itr : SCC){
-        for(auto itr2 : itr)
-            cout << itr2<<" ";
-        cout <<"-1\n";
-    }
-    
     return 0;
-} // SCC - Tarjan Algorithm
+}
