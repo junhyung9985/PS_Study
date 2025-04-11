@@ -1,5 +1,5 @@
 a,b,c =1,5,3
-c=a
+a=c
 a=a+c
 b=b-c
 print(a)
